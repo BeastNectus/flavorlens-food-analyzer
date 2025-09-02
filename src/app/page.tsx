@@ -17,8 +17,8 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, ChefHat, Clock, Users, Sparkles, ArrowRight, X, Eye, Github } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { Upload, ChefHat, Clock, Users, Sparkles, Eye, Github } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
@@ -32,7 +32,6 @@ interface Recipe {
 }
 
 export default function Home() {
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
@@ -42,7 +41,6 @@ export default function Home() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
-      setUploadedFile(file);
       const reader = new FileReader();
       reader.onload = () => {
         const result = reader.result as string;
@@ -156,10 +154,13 @@ export default function Home() {
                         exit={{ opacity: 0, scale: 0.8 }}
                       >
                         <div className="relative inline-block group">
-                          <img
+                          <Image
                             src={imagePreview}
                             alt="Preview"
-                            className="max-w-full max-h-80 sm:max-h-48 lg:max-h-100 mx-auto rounded-lg shadow-xl ring-2 ring-white/20 group-hover:ring-orange-400/50 transition-all"
+                            width={400}
+                            height={300}
+                            unoptimized
+                            className="max-w-full max-h-80 sm:max-h-48 lg:max-h-100 mx-auto rounded-lg shadow-xl ring-2 ring-white/20 group-hover:ring-orange-400/50 transition-all object-cover"
                           />
                           {loading && (
                             <motion.div 

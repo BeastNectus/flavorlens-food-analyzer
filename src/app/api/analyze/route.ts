@@ -75,11 +75,12 @@ export async function POST(request: NextRequest) {
         });
         
         break;
-      } catch (error: any) {
-        console.log(`Model ${model} failed:`, error.status || error.message);
+      } catch (error: unknown) {
+        const errorObj = error as { status?: number; message?: string };
+        console.log(`Model ${model} failed:`, errorObj.status || errorObj.message);
         lastError = error;
         
-        if (error.status === 429) {
+        if (errorObj.status === 429) {
           continue;
         }
         
@@ -124,7 +125,7 @@ export async function POST(request: NextRequest) {
         throw new Error('Response is not an array');
       }
 
-      const validRecipes = recipes.filter((recipe: any) => 
+      const validRecipes = recipes.filter((recipe: Recipe) => 
         recipe.recipeName && 
         recipe.description && 
         Array.isArray(recipe.mainIngredients) && 
@@ -143,18 +144,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to parse AI response as JSON' }, { status: 500 });
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorObj = error as { status?: number; message?: string };
     console.error('API route error:', error);
     
-    if (error.status === 429) {
+    if (errorObj.status === 429) {
       return NextResponse.json({ 
         error: 'AI service is currently busy. Please try again in a few moments.' 
       }, { status: 429 });
-    } else if (error.status === 400) {
+    } else if (errorObj.status === 400) {
       return NextResponse.json({ 
         error: 'Invalid image format. Please try a different image.' 
       }, { status: 400 });
-    } else if (error.status === 401) {
+    } else if (errorObj.status === 401) {
       return NextResponse.json({ 
         error: 'API authentication failed. Please check your API key.' 
       }, { status: 500 });
